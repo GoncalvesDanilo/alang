@@ -10,35 +10,35 @@ function evaluateProgram(program: Program): RuntimeValue {
 }
 
 function evaluateNumericBinaryExpression(
-  left: NumberValue,
-  right: NumberValue,
+  leftHandSide: NumberValue,
+  rightHandSide: NumberValue,
   operation: string
 ): NumberValue {
   let result: number;
   if (operation === '+') {
-    result = left.value + right.value;
+    result = leftHandSide.value + rightHandSide.value;
   } else if (operation === '-') {
-    result = left.value - right.value;
+    result = leftHandSide.value - rightHandSide.value;
   } else if (operation === '*') {
-    result = left.value * right.value;
+    result = leftHandSide.value * rightHandSide.value;
   } else if (operation === '/') {
     // TODO: Check for division by 0
-    result = left.value / right.value;
+    result = leftHandSide.value / rightHandSide.value;
   } else {
-    result = left.value % right.value;
+    result = leftHandSide.value % rightHandSide.value;
   }
 
   return { type: 'number', value: result };
 }
 
 function evaluateBinaryExpression(binaryExpression: BinaryExpression): RuntimeValue {
-  const left = evaluate(binaryExpression.left);
-  const right = evaluate(binaryExpression.right);
+  const leftHandSide = evaluate(binaryExpression.left);
+  const rightHandSide = evaluate(binaryExpression.right);
 
-  if (left.type === 'number' && right.type === 'number') {
+  if (leftHandSide.type === 'number' && rightHandSide.type === 'number') {
     return evaluateNumericBinaryExpression(
-      left as NumberValue,
-      right as NumberValue,
+      leftHandSide as NumberValue,
+      rightHandSide as NumberValue,
       binaryExpression.operator
     );
   }
@@ -65,6 +65,6 @@ export function evaluate(astNode: Statement): RuntimeValue {
 
     default:
       console.error('This AST Node has not yet been setup for interpretation.', astNode);
-      throw new Error('AST Node has not setup.');
+      process.exit();
   }
 }

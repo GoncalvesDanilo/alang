@@ -104,7 +104,7 @@ export const tokenize = (sourceCode: string): Token[] => {
           src[0].charCodeAt(0),
           src[0]
         );
-        throw new Error('Unreconized character found in source');
+        process.exit();
       }
     }
   }

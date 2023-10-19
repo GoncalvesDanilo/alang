@@ -29,7 +29,7 @@ export default class Parser {
     const previous = this.tokens.shift() as Token;
     if (previous.type !== tokenType || !previous) {
       throw new Error(
-        `Parser Error: ${error} \n - Expected: ${tokenType} \n Got: ${previous.type}`
+        `Parser Error: ${error} \n - Expected: ${tokenType} \n - Got: ${previous.type}`
       );
     }
 
@@ -130,7 +130,7 @@ export default class Parser {
 
       default:
         console.error('Unexpected token found while parsing', this.at());
-        throw new Error('Unexpected token found while parsing');
+        process.exit();
     }
   }
 }
