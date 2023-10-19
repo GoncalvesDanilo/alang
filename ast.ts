@@ -8,8 +8,7 @@ export type NodeType =
   | 'ArrayLiteral'
   | 'ObjectLiteral'
   | 'BooleanLiteral'
-  | 'StringLiteral'
-  | 'NullLiteral';
+  | 'StringLiteral';
 
 export interface Statement {
   type: NodeType;
@@ -37,9 +36,4 @@ export interface Identifier extends Expression {
 export interface NumericLiteral extends Expression {
   type: 'NumericLiteral';
   value: number;
-}
-
-export interface NullLiteral extends Expression {
-  type: 'NullLiteral';
-  value: 'null';
 }

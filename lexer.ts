@@ -1,6 +1,5 @@
 export enum TokenType {
   // literal types
-  Null,
   Number,
   Identifier,
 
@@ -26,7 +25,6 @@ export type Token = {
 
 const KEYWORDS: Record<string, TokenType> = {
   let: TokenType.Let,
-  null: TokenType.Null,
 };
 
 const isAlpha = (char: string): boolean => {

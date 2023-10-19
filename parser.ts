@@ -5,7 +5,6 @@ import {
   BinaryExpression,
   NumericLiteral,
   Identifier,
-  NullLiteral,
 } from './ast';
 import { Token, TokenType, tokenize } from './lexer';
 
@@ -28,9 +27,7 @@ export default class Parser {
   private expect(tokenType: TokenType, error: string): Token {
     const previous = this.tokens.shift() as Token;
     if (previous.type !== tokenType || !previous) {
-      throw new Error(
-        `Parser Error: ${error} \n - Expected: ${tokenType} \n - Got: ${previous.type}`
-      );
+      throw `Parser Error: ${error} \n - Expected: ${tokenType} \n - Got: ${previous.type}`;
     }
 
     return previous;
@@ -105,10 +102,6 @@ export default class Parser {
       // user defined values
       case TokenType.Identifier:
         return { type: 'Identifier', symbol: this.eat().value } as Identifier;
-
-      case TokenType.Null:
-        this.eat();
-        return { type: 'NullLiteral', value: 'null' } as NullLiteral;
 
       // constants and numeric constants
       case TokenType.Number:
