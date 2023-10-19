@@ -1,3 +1,4 @@
+import { evaluate } from './interpreter';
 import Parser from './parser';
 
 const repl = () => {
@@ -10,7 +11,9 @@ const repl = () => {
     if (!input || input === 'exit') process.exit();
 
     const program = parser.createAST(input);
-    console.dir(program, { depth: null });
+    const result = evaluate(program);
+
+    console.dir(result, { depth: null });
   }
 };
 
