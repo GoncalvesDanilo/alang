@@ -4,11 +4,13 @@ export enum TokenType {
   Identifier,
 
   // keywords
-  Let,
+  Var,
+  Const,
 
   // operatiors
   BinaryOperator,
   Equals,
+  Semicolon,
 
   // grouping
   OpenParen,
@@ -24,7 +26,8 @@ export type Token = {
 };
 
 const KEYWORDS: Record<string, TokenType> = {
-  let: TokenType.Let,
+  var: TokenType.Var,
+  const: TokenType.Const,
 };
 
 const isAlpha = (char: string): boolean => {
@@ -64,6 +67,8 @@ export const tokenize = (sourceCode: string): Token[] => {
       tokens.push(token(TokenType.BinaryOperator, src.shift()));
     } else if (src[0] === '=') {
       tokens.push(token(TokenType.Equals, src.shift()));
+    } else if (src[0] === ';') {
+      tokens.push(token(TokenType.Semicolon, src.shift()));
     } else {
       // Handle multicharacter tokens
       if (isInteger(src[0])) {
@@ -76,27 +81,26 @@ export const tokenize = (sourceCode: string): Token[] => {
         tokens.push(token(TokenType.Number, num));
       } else if (isAlpha(src[0])) {
         // Handle Identifier & Keyword Tokens.
-        let ident = '';
+        let identifier = '';
         while (src.length > 0 && isAlpha(src[0])) {
-          ident += src.shift();
+          identifier += src.shift();
         }
 
         // CHECK FOR RESERVED KEYWORDS
-        const reserved = KEYWORDS[ident];
+        const reserved = KEYWORDS[identifier];
         // If value is not undefined then the identifier is
         // reconized keyword
         if (typeof reserved === 'number') {
-          tokens.push(token(reserved, ident));
+          tokens.push(token(reserved, identifier));
         } else {
           // Unreconized name must mean user defined symbol.
-          tokens.push(token(TokenType.Identifier, ident));
+          tokens.push(token(TokenType.Identifier, identifier));
         }
       } else if (isSkippable(src[0])) {
         // Skip uneeded chars.
         src.shift();
-      } // Handle unreconized characters.
-      // TODO: Impliment better errors and error recovery.
-      else {
+      } else {
+        // Handle unreconized characters.
         console.error(
           'Unreconized character found in source: ',
           src[0].charCodeAt(0),

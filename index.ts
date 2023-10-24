@@ -1,14 +1,10 @@
-import { Environment } from './environment';
-import { evaluate } from './interpreter';
+import { Environment } from './runtime/environment';
+import { evaluate } from './runtime/interpreter';
 import Parser from './parser';
-import { MakeBoolean, MakeNull } from './values';
 
 const repl = () => {
   const parser = new Parser();
   const env = new Environment();
-  env.declareVariable('null', MakeNull())
-  env.declareVariable('true', MakeBoolean(true))
-  env.declareVariable('false', MakeBoolean(false))
   console.log('Alang Repl v0.0');
 
   while (true) {

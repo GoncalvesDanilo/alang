@@ -1,5 +1,8 @@
 export type NodeType =
+  // Statements
   | 'Program'
+  | 'VariableDeclaration'
+  // Expressions
   | 'Identifier'
   | 'BinaryExpression'
   | 'CallExpression'
@@ -17,6 +20,13 @@ export interface Statement {
 export interface Program extends Statement {
   type: 'Program';
   body: Statement[];
+}
+
+export interface VariableDeclaration extends Statement {
+  type: 'VariableDeclaration';
+  constant: boolean;
+  identifier: string;
+  value?: Expression;
 }
 
 export interface Expression extends Statement {}

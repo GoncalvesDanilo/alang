@@ -23,10 +23,19 @@ export function MakeNumber(number: number = 0): NumberValue {
 }
 
 export interface BooleanValue extends RuntimeValue {
-  type: 'boolean',
-  value: boolean,
+  type: 'boolean';
+  value: boolean;
 }
 
 export function MakeBoolean(bool: boolean = true): BooleanValue {
   return { type: 'boolean', value: bool };
+}
+
+export interface Variable {
+  value: RuntimeValue;
+  constant: boolean;
+}
+
+export function MakeVariable(value: RuntimeValue, constant: boolean): Variable {
+  return { value, constant };
 }
