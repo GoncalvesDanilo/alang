@@ -1,4 +1,4 @@
-import { BinaryExpression, Identifier } from '../../ast';
+import { AssignmentExpression, BinaryExpression, Identifier } from '../../ast';
 import { Environment } from '../environment';
 import { evaluate } from '../interpreter';
 import { NumberValue, RuntimeValue, MakeNull } from '../values';
@@ -41,6 +41,17 @@ export function evaluateBinaryExpression(
   }
 
   return MakeNull();
+}
+
+export function evaluateAssignmentExpression(
+  assignment: AssignmentExpression,
+  env: Environment
+): RuntimeValue {
+  if (assignment.assignee.type !== 'Identifier')
+    throw `Cannot assign value to ${assignment.assignee}. Only Identifiers`;
+
+  const variableName = (assignment.assignee as Identifier).symbol;
+  return env.assignVariable(variableName, evaluate(assignment.value, env));
 }
 
 export function evaluateIdentifier(
