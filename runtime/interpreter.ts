@@ -3,6 +3,7 @@ import {
   BinaryExpression,
   Identifier,
   NumericLiteral,
+  ObjectLiteral,
   Program,
   Statement,
   VariableDeclaration,
@@ -11,6 +12,7 @@ import {
   evaluateIdentifier,
   evaluateBinaryExpression,
   evaluateAssignmentExpression,
+  evaluateObject,
 } from './eval/expressions';
 import { Environment } from './environment';
 import { RuntimeValue, NumberValue } from './values';
@@ -26,6 +28,8 @@ export function evaluate(astNode: Statement, env: Environment): RuntimeValue {
       } as NumberValue;
     case 'Identifier':
       return evaluateIdentifier(astNode as Identifier, env);
+    case 'ObjectLiteral':
+      return evaluateObject(astNode as ObjectLiteral, env);
     case 'AssignmentExpression':
       return evaluateAssignmentExpression(astNode as AssignmentExpression, env);
     case 'BinaryExpression':

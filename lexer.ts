@@ -11,10 +11,14 @@ export enum TokenType {
   BinaryOperator,
   Equals,
   Semicolon,
+  Colon,
+  Comma,
 
   // grouping
   OpenParen,
   CloseParen,
+  OpenBraces,
+  CloseBraces,
 
   // end of file
   EOF,
@@ -57,6 +61,10 @@ export const tokenize = (sourceCode: string): Token[] => {
       tokens.push(token(TokenType.OpenParen, src.shift()));
     } else if (src[0] === ')') {
       tokens.push(token(TokenType.CloseParen, src.shift()));
+    } else if (src[0] === '{') {
+      tokens.push(token(TokenType.OpenBraces, src.shift()));
+    } else if (src[0] === '}') {
+      tokens.push(token(TokenType.CloseBraces, src.shift()));
     } else if (
       src[0] === '+' ||
       src[0] === '-' ||
@@ -69,6 +77,10 @@ export const tokenize = (sourceCode: string): Token[] => {
       tokens.push(token(TokenType.Equals, src.shift()));
     } else if (src[0] === ';') {
       tokens.push(token(TokenType.Semicolon, src.shift()));
+    } else if (src[0] === ':') {
+      tokens.push(token(TokenType.Colon, src.shift()));
+    } else if (src[0] === ',') {
+      tokens.push(token(TokenType.Comma, src.shift()));
     } else {
       // Handle multicharacter tokens
       if (isInteger(src[0])) {
@@ -82,7 +94,7 @@ export const tokenize = (sourceCode: string): Token[] => {
       } else if (isAlpha(src[0])) {
         // Handle Identifier & Keyword Tokens.
         let identifier = '';
-        while (src.length > 0 && isAlpha(src[0])) {
+        while (src.length > 0 && (isAlpha(src[0]) || isInteger(src[0]))) {
           identifier += src.shift();
         }
 

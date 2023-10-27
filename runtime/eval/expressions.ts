@@ -1,7 +1,12 @@
-import { AssignmentExpression, BinaryExpression, Identifier } from '../../ast';
+import {
+  AssignmentExpression,
+  BinaryExpression,
+  Identifier,
+  ObjectLiteral,
+} from '../../ast';
 import { Environment } from '../environment';
 import { evaluate } from '../interpreter';
-import { NumberValue, RuntimeValue, MakeNull } from '../values';
+import { NumberValue, RuntimeValue, MakeNull, ObjectValue } from '../values';
 
 function evaluateNumericBinaryExpression(
   leftHandSide: NumberValue,
@@ -60,4 +65,20 @@ export function evaluateIdentifier(
 ): RuntimeValue {
   const variable = env.lookupVariable(identifier.symbol);
   return variable;
+}
+
+export function evaluateObject(obj: ObjectLiteral, env: Environment): RuntimeValue {
+  const object = { type: 'object', properties: new Map() } as ObjectValue;
+  for (const { key, value } of obj.properties) {
+    let runtimeValue: RuntimeValue;
+    if (!value) {
+      runtimeValue = env.lookupVariable(key);
+    } else {
+      runtimeValue = evaluate(value, env);
+    }
+
+    object.properties.set(key, runtimeValue);
+  }
+
+  return object;
 }

@@ -7,6 +7,8 @@ import {
   Identifier,
   VariableDeclaration,
   AssignmentExpression,
+  Property,
+  ObjectLiteral,
 } from './ast';
 import { Token, TokenType, tokenize } from './lexer';
 
@@ -100,7 +102,7 @@ export default class Parser {
   }
 
   private parseAssignmentExpression(): Expression {
-    const left = this.parseAdditiveExpression();
+    const left = this.parseObjectExpression();
 
     if (this.at().type === TokenType.Equals) {
       this.eat();
@@ -113,6 +115,46 @@ export default class Parser {
     }
 
     return left;
+  }
+
+  private parseObjectExpression(): Expression {
+    if (this.at().type !== TokenType.OpenBraces) {
+      return this.parseAdditiveExpression();
+    }
+
+    this.eat();
+    const properties = new Array<Property>();
+
+    while (this.notEOF() && this.at().type !== TokenType.CloseBraces) {
+      const key = this.expect(TokenType.Identifier, 'Expect key on Object Literal').value;
+
+      if (this.at().type === TokenType.Comma) {
+        this.eat();
+        properties.push({ type: 'Property', key } as Property);
+        continue;
+      } else if (this.at().type === TokenType.CloseBraces) {
+        properties.push({ type: 'Property', key } as Property);
+        continue;
+      }
+
+      this.expect(
+        TokenType.Colon,
+        'Expected colon following identifier on Object Literal'
+      );
+
+      const value = this.parseExpression();
+      properties.push({ type: 'Property', key, value });
+
+      if (this.at().type !== TokenType.CloseBraces) {
+        this.expect(
+          TokenType.Comma,
+          'Expected comma or closing brace following property'
+        );
+      }
+    }
+
+    this.expect(TokenType.CloseBraces, 'Expect closing brace on Object Literal');
+    return { type: 'ObjectLiteral', properties } as ObjectLiteral;
   }
 
   private parseAdditiveExpression() {

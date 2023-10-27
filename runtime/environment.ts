@@ -1,12 +1,41 @@
-import { MakeVariable, RuntimeValue, Variable } from './values';
+import { MakeBoolean, MakeNull, MakeVariable, RuntimeValue, Variable } from './values';
+
+const defaultGlobalConstants: Array<{ identifier: string; value: RuntimeValue }> = [
+  {
+    identifier: 'true',
+    value: MakeBoolean(true),
+  },
+  {
+    identifier: 'false',
+    value: MakeBoolean(false),
+  },
+  {
+    identifier: 'null',
+    value: MakeNull(),
+  },
+];
 
 export class Environment {
   private parent?: Environment;
   private variables: Map<string, Variable>;
 
-  constructor(parent?: Environment) {
+  constructor(
+    parent?: Environment,
+    globalContants?: Array<{ identifier: string; value: RuntimeValue }>
+  ) {
     this.parent = parent;
     this.variables = new Map();
+    if (!parent) {
+      let defaultConstants;
+      if (globalContants) {
+        defaultConstants = globalContants;
+      } else {
+        defaultConstants = defaultGlobalConstants;
+      }
+      defaultConstants.forEach((constant) => {
+        this.declareVariable(constant.identifier, constant.value, true);
+      });
+    }
   }
 
   public declareVariable(

@@ -3,11 +3,13 @@ export type NodeType =
   | 'Program'
   | 'VariableDeclaration'
   // Expressions
-  | 'Identifier'
   | 'BinaryExpression'
   | 'AssignmentExpression'
   | 'CallExpression'
   | 'UnaryExpression'
+  // Literals
+  | 'Identifier'
+  | 'Property'
   | 'NumericLiteral'
   | 'ArrayLiteral'
   | 'ObjectLiteral'
@@ -33,7 +35,7 @@ export interface VariableDeclaration extends Statement {
 export interface Expression extends Statement {}
 
 export interface AssignmentExpression extends Expression {
-  type: 'AssignmentExpression',
+  type: 'AssignmentExpression';
   assignee: Expression;
   value: Expression;
 }
@@ -53,4 +55,15 @@ export interface Identifier extends Expression {
 export interface NumericLiteral extends Expression {
   type: 'NumericLiteral';
   value: number;
+}
+
+export interface Property extends Expression {
+  type: 'Property';
+  key: string;
+  value?: Expression;
+}
+
+export interface ObjectLiteral extends Expression {
+  type: 'ObjectLiteral';
+  properties: Property[];
 }

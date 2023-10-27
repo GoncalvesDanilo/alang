@@ -1,14 +1,23 @@
 import { Environment } from './runtime/environment';
 import { evaluate } from './runtime/interpreter';
-import { MakeBoolean, MakeNull } from './runtime/values';
 import Parser from './parser';
+
+const run = async (fileName: string) => {
+  const parser = new Parser();
+  const env = new Environment();
+
+  const inputFile = Bun.file(fileName);
+  const inputText = await inputFile.text();
+
+  const program = parser.createAST(inputText);
+  const result = evaluate(program, env);
+
+  console.dir(result, { depth: null });
+}
 
 const repl = () => {
   const parser = new Parser();
   const env = new Environment();
-  env.declareVariable('true', MakeBoolean(true), true);
-  env.declareVariable('false', MakeBoolean(false), true);
-  env.declareVariable('null', MakeNull(), true);
   console.log('Alang Repl v0.0');
 
   while (true) {
@@ -23,4 +32,5 @@ const repl = () => {
   }
 };
 
-repl();
+// repl();
+run('./test.a');
