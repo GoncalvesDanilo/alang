@@ -6,7 +6,7 @@ export type NodeType =
   | 'BinaryExpression'
   | 'AssignmentExpression'
   | 'CallExpression'
-  | 'UnaryExpression'
+  | 'MemberExpression'
   // Literals
   | 'Identifier'
   | 'Property'
@@ -45,6 +45,19 @@ export interface BinaryExpression extends Expression {
   left: Expression;
   right: Expression;
   operator: string;
+}
+
+export interface CallExpression extends Expression {
+  type: 'CallExpression';
+  caller: Expression;
+  arguments: Expression[];
+}
+
+export interface MemberExpression extends Expression {
+  type: 'MemberExpression';
+  object: Expression;
+  property: Expression;
+  computed: boolean;
 }
 
 export interface Identifier extends Expression {

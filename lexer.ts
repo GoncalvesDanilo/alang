@@ -13,12 +13,15 @@ export enum TokenType {
   Semicolon,
   Colon,
   Comma,
+  Dot,
 
   // grouping
   OpenParen,
   CloseParen,
   OpenBraces,
   CloseBraces,
+  OpenBrackets,
+  CloseBrackets,
 
   // end of file
   EOF,
@@ -65,6 +68,10 @@ export const tokenize = (sourceCode: string): Token[] => {
       tokens.push(token(TokenType.OpenBraces, src.shift()));
     } else if (src[0] === '}') {
       tokens.push(token(TokenType.CloseBraces, src.shift()));
+    } else if (src[0] === '[') {
+      tokens.push(token(TokenType.OpenBrackets, src.shift()));
+    } else if (src[0] === ']') {
+      tokens.push(token(TokenType.CloseBrackets, src.shift()));
     } else if (
       src[0] === '+' ||
       src[0] === '-' ||
@@ -81,6 +88,8 @@ export const tokenize = (sourceCode: string): Token[] => {
       tokens.push(token(TokenType.Colon, src.shift()));
     } else if (src[0] === ',') {
       tokens.push(token(TokenType.Comma, src.shift()));
+    } else if (src[0] === '.') {
+      tokens.push(token(TokenType.Dot, src.shift()));
     } else {
       // Handle multicharacter tokens
       if (isInteger(src[0])) {
