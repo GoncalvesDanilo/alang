@@ -1,12 +1,13 @@
 import {
   AssignmentExpression,
   BinaryExpression,
+  CallExpression,
   Identifier,
   ObjectLiteral,
 } from '../../ast';
 import { Environment } from '../environment';
 import { evaluate } from '../interpreter';
-import { NumberValue, RuntimeValue, MakeNull, ObjectValue } from '../values';
+import { NumberValue, RuntimeValue, MakeNull, ObjectValue, NativeFunctionValue } from '../values';
 
 function evaluateNumericBinaryExpression(
   leftHandSide: NumberValue,
@@ -81,4 +82,19 @@ export function evaluateObject(obj: ObjectLiteral, env: Environment): RuntimeVal
   }
 
   return object;
+}
+
+export function evaluateCallExpression(
+  callExpression: CallExpression,
+  env: Environment
+): RuntimeValue {
+  const args = callExpression.arguments.map((argument) => evaluate(argument, env));
+  const func = evaluate(callExpression.caller, env);
+
+  if (func.type !== 'native-function') {
+    throw 'Cannot call identifier that is not a function' + JSON.stringify(func);
+  }
+
+  const result = (func as NativeFunctionValue).call(args, env);
+  return result;
 }

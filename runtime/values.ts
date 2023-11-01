@@ -1,4 +1,6 @@
-export type ValueType = 'boolean' | 'null' | 'number' | 'object';
+import { Environment } from './environment';
+
+export type ValueType = 'boolean' | 'null' | 'number' | 'object' | 'native-function';
 
 export interface RuntimeValue {
   type: ValueType;
@@ -43,4 +45,15 @@ export interface Variable {
 
 export function MakeVariable(value: RuntimeValue, constant: boolean): Variable {
   return { value, constant };
+}
+
+export type FunctionCall = (args: RuntimeValue[], env: Environment) => RuntimeValue;
+
+export interface NativeFunctionValue extends RuntimeValue {
+  type: 'native-function';
+  call: FunctionCall;
+}
+
+export function MakeNativeFunction(call: FunctionCall) {
+  return { type: 'native-function', call } as NativeFunctionValue;
 }

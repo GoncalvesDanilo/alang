@@ -10,9 +10,7 @@ const run = async (fileName: string) => {
   const inputText = await inputFile.text();
 
   const program = parser.createAST(inputText);
-  const result = evaluate(program, env);
-
-  console.dir(result, { depth: null });
+  evaluate(program, env);
 }
 
 const repl = () => {

@@ -1,19 +1,6 @@
-import { MakeBoolean, MakeNull, MakeVariable, RuntimeValue, Variable } from './values';
-
-const defaultGlobalConstants: Array<{ identifier: string; value: RuntimeValue }> = [
-  {
-    identifier: 'true',
-    value: MakeBoolean(true),
-  },
-  {
-    identifier: 'false',
-    value: MakeBoolean(false),
-  },
-  {
-    identifier: 'null',
-    value: MakeNull(),
-  },
-];
+import { MakeVariable, RuntimeValue, Variable } from './values';
+import { defaultGlobalConstants } from './native/constants';
+import { nativeFunctions } from './native/functions';
 
 export class Environment {
   private parent?: Environment;
@@ -32,7 +19,7 @@ export class Environment {
       } else {
         defaultConstants = defaultGlobalConstants;
       }
-      defaultConstants.forEach((constant) => {
+      [...defaultConstants, ...nativeFunctions].forEach((constant) => {
         this.declareVariable(constant.identifier, constant.value, true);
       });
     }
