@@ -1,6 +1,13 @@
+import { Identifier, Statement } from '../ast';
 import { Environment } from './environment';
 
-export type ValueType = 'boolean' | 'null' | 'number' | 'object' | 'native-function';
+export type ValueType =
+  | 'boolean'
+  | 'null'
+  | 'number'
+  | 'object'
+  | 'native-function'
+  | 'function';
 
 export interface RuntimeValue {
   type: ValueType;
@@ -56,4 +63,12 @@ export interface NativeFunctionValue extends RuntimeValue {
 
 export function MakeNativeFunction(call: FunctionCall) {
   return { type: 'native-function', call } as NativeFunctionValue;
+}
+
+export interface FunctionValue extends RuntimeValue {
+  type: 'function';
+  name: string;
+  parameters: Identifier[];
+  declarationEnvironment: Environment;
+  body: Statement[];
 }

@@ -2,6 +2,7 @@ import {
   AssignmentExpression,
   BinaryExpression,
   CallExpression,
+  FunctionDeclaration,
   Identifier,
   NumericLiteral,
   ObjectLiteral,
@@ -18,7 +19,11 @@ import {
 } from './eval/expressions';
 import { Environment } from './environment';
 import { RuntimeValue, NumberValue } from './values';
-import { evaluateProgram, evaluateVariableDeclaration } from './eval/statements';
+import {
+  evaluateFunctionDeclaration,
+  evaluateProgram,
+  evaluateVariableDeclaration,
+} from './eval/statements';
 
 export function evaluate(astNode: Statement, env: Environment): RuntimeValue {
   switch (astNode.type) {
@@ -44,6 +49,8 @@ export function evaluate(astNode: Statement, env: Environment): RuntimeValue {
       return evaluateProgram(astNode as Program, env);
     case 'VariableDeclaration':
       return evaluateVariableDeclaration(astNode as VariableDeclaration, env);
+    case 'FunctionDeclaration':
+      return evaluateFunctionDeclaration(astNode as FunctionDeclaration, env);
 
     default:
       console.error(

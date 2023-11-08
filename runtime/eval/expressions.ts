@@ -7,7 +7,14 @@ import {
 } from '../../ast';
 import { Environment } from '../environment';
 import { evaluate } from '../interpreter';
-import { NumberValue, RuntimeValue, MakeNull, ObjectValue, NativeFunctionValue } from '../values';
+import {
+  NumberValue,
+  RuntimeValue,
+  MakeNull,
+  ObjectValue,
+  NativeFunctionValue,
+  FunctionValue,
+} from '../values';
 
 function evaluateNumericBinaryExpression(
   leftHandSide: NumberValue,
@@ -91,10 +98,31 @@ export function evaluateCallExpression(
   const args = callExpression.arguments.map((argument) => evaluate(argument, env));
   const func = evaluate(callExpression.caller, env);
 
-  if (func.type !== 'native-function') {
-    throw 'Cannot call identifier that is not a function' + JSON.stringify(func);
+  if (func.type === 'native-function') {
+    return (func as NativeFunctionValue).call(args, env);
+  } else if (func.type === 'function') {
+    const functionValue = func as FunctionValue;
+    const scope = new Environment(env);
+
+    if (functionValue.parameters.length !== args.length) {
+      throw (
+        `Function call expression expected ${functionValue.parameters.length} ` +
+        `arguments but got ${args.length}`
+      );
+    }
+
+    for (let index = 0; index < functionValue.parameters.length; index++) {
+      const variableName = functionValue.parameters[index].symbol;
+      scope.declareVariable(variableName, args[index], true);
+    }
+
+    let result: RuntimeValue = MakeNull();
+    for (const statement of functionValue.body) {
+      result = evaluate(statement, scope);
+    }
+
+    return result;
   }
 
-  const result = (func as NativeFunctionValue).call(args, env);
-  return result;
+  throw 'Cannot call identifier that is not a function\n' + JSON.stringify(func, null, 2);
 }

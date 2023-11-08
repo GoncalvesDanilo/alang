@@ -6,6 +6,8 @@ export enum TokenType {
   // keywords
   Var,
   Const,
+  Function,
+  Return,
 
   // operatiors
   BinaryOperator,
@@ -35,6 +37,8 @@ export type Token = {
 const KEYWORDS: Record<string, TokenType> = {
   var: TokenType.Var,
   const: TokenType.Const,
+  funcao: TokenType.Function,
+  retornar: TokenType.Return,
 };
 
 const isAlpha = (char: string): boolean => {
