@@ -12,6 +12,7 @@ import {
   MemberExpression,
   CallExpression,
   FunctionDeclaration,
+  ReturnStatement,
 } from './ast';
 import { Token, TokenType, tokenize } from './lexer';
 
@@ -62,6 +63,8 @@ export default class Parser {
         return this.parseVariableDeclaration();
       case TokenType.Function:
         return this.parseFunctionDeclaration();
+      case TokenType.Return:
+        return this.parseReturnStatement();
       default:
         return this.parseExpression();
     }
@@ -74,30 +77,18 @@ export default class Parser {
       'Expected identifier on variable declaration.'
     ).value;
 
-    if (this.at().type === TokenType.Semicolon) {
-      this.eat();
-      if (isConstant) throw 'Must assign value to constant value';
-
-      return {
-        type: 'VariableDeclaration',
-        constant: false,
-        identifier,
-      } as VariableDeclaration;
-    }
-
-    this.expect(TokenType.Equals, 'Expected equals token on variable declaration.');
-
-    const declaration = {
+    let declaration = {
       type: 'VariableDeclaration',
       identifier,
-      value: this.parseExpression(),
       constant: isConstant,
     } as VariableDeclaration;
 
-    this.expect(
-      TokenType.Semicolon,
-      'Variable declaration statment must end with semicolon.'
-    );
+    if (this.at().type === TokenType.Equals) {
+      this.eat();
+      declaration.value = this.parseExpression();
+    } else {
+      if (isConstant) throw 'Must assign value to constant value';
+    }
 
     return declaration;
   }
@@ -134,6 +125,19 @@ export default class Parser {
     } as FunctionDeclaration;
 
     return func;
+  }
+
+  private parseReturnStatement(): Statement {
+    this.eat();
+    let returnStatement = {
+      type: 'ReturnStatement',
+    } as ReturnStatement;
+
+    try {
+      returnStatement.value = this.parseExpression();
+    } catch {}
+
+    return returnStatement;
   }
 
   private parseExpression(): Expression {
@@ -348,8 +352,7 @@ export default class Parser {
       }
 
       default:
-        console.error('Unexpected token found while parsing', this.at());
-        process.exit();
+        throw 'Unexpected token found while parsing' + this.at();
     }
   }
 }

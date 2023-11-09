@@ -3,6 +3,7 @@ export type NodeType =
   | 'Program'
   | 'VariableDeclaration'
   | 'FunctionDeclaration'
+  | 'ReturnStatement'
   // Expressions
   | 'BinaryExpression'
   | 'AssignmentExpression'
@@ -16,6 +17,8 @@ export type NodeType =
   | 'ObjectLiteral'
   | 'BooleanLiteral'
   | 'StringLiteral';
+
+// Statements
 
 export interface Statement {
   type: NodeType;
@@ -39,6 +42,13 @@ export interface FunctionDeclaration extends Statement {
   parameters: Identifier[];
   body: Statement[];
 }
+
+export interface ReturnStatement extends Statement {
+  type: 'ReturnStatement';
+  value?: Expression;
+}
+
+// Expressions
 
 export interface Expression extends Statement {}
 
@@ -67,6 +77,8 @@ export interface MemberExpression extends Expression {
   property: Expression;
   computed: boolean;
 }
+
+// Literals
 
 export interface Identifier extends Expression {
   type: 'Identifier';

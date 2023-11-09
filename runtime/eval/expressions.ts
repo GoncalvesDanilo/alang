@@ -4,6 +4,7 @@ import {
   CallExpression,
   Identifier,
   ObjectLiteral,
+  ReturnStatement,
 } from '../../ast';
 import { Environment } from '../environment';
 import { evaluate } from '../interpreter';
@@ -118,7 +119,12 @@ export function evaluateCallExpression(
 
     let result: RuntimeValue = MakeNull();
     for (const statement of functionValue.body) {
-      result = evaluate(statement, scope);
+      if (statement.type === 'ReturnStatement') {
+        const returnExpression = (statement as ReturnStatement).value;
+        if (returnExpression) result = evaluate(returnExpression, scope);
+        break;
+      }
+      evaluate(statement, scope);
     }
 
     return result;
