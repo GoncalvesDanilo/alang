@@ -19,3 +19,4 @@ References
 - https://accu.org/journals/overload/26/145/balaam_2510/
 - https://www.techtarget.com/searchapparchitecture/definition/parser
 - https://dev.to/balapriya/abstract-syntax-tree-ast-explained-in-plain-english-1h38
+- https://github.com/acornjs/acorn

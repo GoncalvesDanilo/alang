@@ -7,10 +7,16 @@ export enum TokenType {
   Var,
   Const,
   Function,
+  If,
+  Else,
+  While,
   Return,
 
   // operatiors
   BinaryOperator,
+  EqualityOperator,
+  RelationalOperator,
+  LogicalOperator,
   Equals,
   Semicolon,
   Colon,
@@ -39,20 +45,22 @@ const KEYWORDS: Record<string, TokenType> = {
   const: TokenType.Const,
   funcao: TokenType.Function,
   retornar: TokenType.Return,
+  se: TokenType.If,
+  senao: TokenType.Else,
 };
 
 const isAlpha = (char: string): boolean => {
   return char.toUpperCase() !== char.toLowerCase();
 };
 
-const isSkippable = (char: string): boolean => {
-  return char === ' ' || char === '\t' || char === '\n';
-};
-
 const isInteger = (str: string) => {
   const c = str.charCodeAt(0);
   const bounds = ['0'.charCodeAt(0), '9'.charCodeAt(0)];
   return c >= bounds[0] && c <= bounds[1];
+};
+
+const isSkippable = (char: string): boolean => {
+  return char === ' ' || char === '\t' || char === '\n';
 };
 
 const token = (type: TokenType, value: string = ''): Token => {
@@ -85,7 +93,66 @@ export const tokenize = (sourceCode: string): Token[] => {
     ) {
       tokens.push(token(TokenType.BinaryOperator, src.shift()));
     } else if (src[0] === '=') {
-      tokens.push(token(TokenType.Equals, src.shift()));
+      let tokenValue = src.shift() as string; // =
+      if (src[0] === '=') {
+        tokenValue += src.shift(); // ==
+        if (src[0] === '=') {
+          tokenValue += src.shift(); // ===
+          tokens.push(token(TokenType.EqualityOperator, tokenValue));
+          continue;
+        }
+        tokens.push(token(TokenType.EqualityOperator, tokenValue));
+        continue;
+      }
+      tokens.push(token(TokenType.Equals, tokenValue));
+    } else if (src[0] === '!') {
+      let tokenValue = src.shift() as string; // !
+      // @ts-expect-error
+      if (src[0] === '=') {
+        tokenValue += src.shift(); // !=
+        if (src[0] === '=') {
+          tokenValue += src.shift(); // !==
+          tokens.push(token(TokenType.EqualityOperator, tokenValue));
+          continue;
+        }
+        tokens.push(token(TokenType.EqualityOperator, tokenValue));
+        continue;
+      }
+      tokens.push(token(TokenType.LogicalOperator, tokenValue));
+    } else if (src[0] === '>') {
+      let tokenValue = src.shift() as string; // >
+      // @ts-expect-error
+      if (src[0] === '=') {
+        tokenValue += src.shift(); // >=
+        tokens.push(token(TokenType.RelationalOperator, tokenValue));
+        continue;
+      }
+      tokens.push(token(TokenType.RelationalOperator, tokenValue));
+    } else if (src[0] === '<') {
+      let tokenValue = src.shift() as string; // <
+      // @ts-expect-error
+      if (src[0] === '=') {
+        tokenValue += src.shift(); // <=
+        tokens.push(token(TokenType.RelationalOperator, tokenValue));
+        continue;
+      }
+      tokens.push(token(TokenType.RelationalOperator, tokenValue));
+    } else if (src[0] === '&') {
+      let tokenValue = src.shift() as string; // &
+      if (src[0] === '&') {
+        tokenValue += src.shift(); // &&
+        tokens.push(token(TokenType.LogicalOperator, tokenValue));
+        continue;
+      }
+      tokens.push(token(TokenType.LogicalOperator, tokenValue));
+    } else if (src[0] === '|') {
+      let tokenValue = src.shift() as string; // |
+      if (src[0] === '|') {
+        tokenValue += src.shift(); // ||
+        tokens.push(token(TokenType.LogicalOperator, tokenValue));
+        continue;
+      }
+      tokens.push(token(TokenType.LogicalOperator, tokenValue));
     } else if (src[0] === ';') {
       tokens.push(token(TokenType.Semicolon, src.shift()));
     } else if (src[0] === ':') {

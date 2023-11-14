@@ -13,6 +13,8 @@ import {
   CallExpression,
   FunctionDeclaration,
   ReturnStatement,
+  IfStatement,
+  BooleanExpression,
 } from './ast';
 import { Token, TokenType, tokenize } from './lexer';
 
@@ -65,6 +67,8 @@ export default class Parser {
         return this.parseFunctionDeclaration();
       case TokenType.Return:
         return this.parseReturnStatement();
+      case TokenType.If:
+        return this.parseIfStatement();
       default:
         return this.parseExpression();
     }
@@ -140,6 +144,49 @@ export default class Parser {
     return returnStatement;
   }
 
+  private parseIfStatement(): Statement {
+    this.eat();
+    this.expect(TokenType.OpenParen, 'Expected open parenthisis on If statement');
+
+    const condition = this.parseExpression();
+
+    this.expect(TokenType.CloseParen, 'Expected clossing parenthisis on If statement');
+    this.expect(TokenType.OpenBraces, 'Expected open braces on If statement');
+
+    let body: Statement[] = [];
+    while (this.at().type !== TokenType.CloseBraces && this.notEOF()) {
+      body.push(this.parseStatement());
+    }
+
+    this.expect(TokenType.CloseBraces, 'Expected Closing Brace on If statement');
+
+    let ifStatement = {
+      type: 'IfStatement',
+      condition,
+      body,
+    } as IfStatement;
+
+    if (this.at().type === TokenType.Else) {
+      this.eat();
+      if (this.at().type !== TokenType.If) {
+        this.expect(TokenType.OpenBraces, 'Expected open braces on Else statement');
+
+        let elseBody: Statement[] = [];
+        while (this.at().type !== TokenType.CloseBraces && this.notEOF()) {
+          elseBody.push(this.parseStatement());
+        }
+
+        this.expect(TokenType.CloseBraces, 'Expected Closing Brace on Else statement');
+
+        ifStatement.elseBody = elseBody;
+      } else {
+        ifStatement.elseBody = [this.parseIfStatement()];
+      }
+    }
+
+    return ifStatement;
+  }
+
   private parseExpression(): Expression {
     return this.parseAssignmentExpression();
   }
@@ -162,7 +209,7 @@ export default class Parser {
 
   private parseObjectExpression(): Expression {
     if (this.at().type !== TokenType.OpenBraces) {
-      return this.parseAdditiveExpression();
+      return this.parseBooleanExpression();
     }
 
     this.eat();
@@ -198,6 +245,38 @@ export default class Parser {
 
     this.expect(TokenType.CloseBraces, 'Expect closing brace on Object Literal');
     return { type: 'ObjectLiteral', properties } as ObjectLiteral;
+  }
+
+  private parseBooleanExpression(): Expression {
+    let left = this.parseAdditiveExpression();
+
+    while (
+      this.at().type === TokenType.EqualityOperator ||
+      this.at().type === TokenType.RelationalOperator ||
+      this.at().type === TokenType.LogicalOperator
+    ) {
+      if (this.at().type !== TokenType.LogicalOperator) {
+        const operator = this.eat().value;
+        const right = this.parseAdditiveExpression();
+        left = {
+          type: 'BooleanExpression',
+          left,
+          right,
+          operator,
+        } as BooleanExpression;
+      } else {
+        const operator = this.eat().value;
+        const right = this.parseExpression();
+        left = {
+          type: 'BooleanExpression',
+          left,
+          right,
+          operator,
+        } as BooleanExpression;
+      }
+    }
+
+    return left;
   }
 
   private parseAdditiveExpression() {
@@ -352,7 +431,7 @@ export default class Parser {
       }
 
       default:
-        throw 'Unexpected token found while parsing' + this.at();
+        throw 'Unexpected token found while parsing ' + JSON.stringify(this.at());
     }
   }
 }

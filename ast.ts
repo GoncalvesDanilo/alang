@@ -4,8 +4,10 @@ export type NodeType =
   | 'VariableDeclaration'
   | 'FunctionDeclaration'
   | 'ReturnStatement'
+  | 'IfStatement'
   // Expressions
   | 'BinaryExpression'
+  | 'BooleanExpression'
   | 'AssignmentExpression'
   | 'CallExpression'
   | 'MemberExpression'
@@ -48,6 +50,13 @@ export interface ReturnStatement extends Statement {
   value?: Expression;
 }
 
+export interface IfStatement extends Statement {
+  type: 'IfStatement';
+  condition: Expression;
+  body: Statement[];
+  elseBody?: Statement[];
+}
+
 // Expressions
 
 export interface Expression extends Statement {}
@@ -60,6 +69,13 @@ export interface AssignmentExpression extends Expression {
 
 export interface BinaryExpression extends Expression {
   type: 'BinaryExpression';
+  left: Expression;
+  right: Expression;
+  operator: string;
+}
+
+export interface BooleanExpression extends Expression {
+  type: 'BooleanExpression';
   left: Expression;
   right: Expression;
   operator: string;
