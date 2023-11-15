@@ -77,8 +77,8 @@ export interface BinaryExpression extends Expression {
 export interface BooleanExpression extends Expression {
   type: 'BooleanExpression';
   left: Expression;
-  right: Expression;
-  operator: string;
+  right?: Expression;
+  operator?: string;
 }
 
 export interface CallExpression extends Expression {

@@ -1,13 +1,16 @@
 import {
   AssignmentExpression,
   BinaryExpression,
+  BooleanExpression,
   CallExpression,
   Identifier,
+  MemberExpression,
   ObjectLiteral,
   ReturnStatement,
 } from '../../ast';
 import { Environment } from '../environment';
 import { evaluate } from '../interpreter';
+import { ConvertToString, GetRuntimeValue } from '../native/utils';
 import {
   NumberValue,
   RuntimeValue,
@@ -15,7 +18,10 @@ import {
   ObjectValue,
   NativeFunctionValue,
   FunctionValue,
+  StringValue,
+  MakeBoolean,
 } from '../values';
+import { evaluateCodeBlock } from './statements';
 
 function evaluateNumericBinaryExpression(
   leftHandSide: NumberValue,
@@ -92,6 +98,30 @@ export function evaluateObject(obj: ObjectLiteral, env: Environment): RuntimeVal
   return object;
 }
 
+export function evaluateMemberExpression(
+  memberExpression: MemberExpression,
+  env: Environment
+): RuntimeValue {
+  const objectValue = evaluate(memberExpression.object, env);
+  if (objectValue.type !== 'object')
+    throw 'Cannot get member from variable that is not a object';
+
+  let propertyValue: string;
+  if (memberExpression.computed) {
+    propertyValue = ConvertToString(evaluate(memberExpression.property, env));
+  } else {
+    propertyValue = (memberExpression.property as Identifier).symbol;
+  }
+
+  const memberValue = (objectValue as ObjectValue).properties.get(propertyValue);
+
+  if (!memberValue) {
+    return MakeNull();
+  }
+
+  return memberValue;
+}
+
 export function evaluateCallExpression(
   callExpression: CallExpression,
   env: Environment
@@ -117,18 +147,56 @@ export function evaluateCallExpression(
       scope.declareVariable(variableName, args[index], true);
     }
 
-    let result: RuntimeValue = MakeNull();
-    for (const statement of functionValue.body) {
-      if (statement.type === 'ReturnStatement') {
-        const returnExpression = (statement as ReturnStatement).value;
-        if (returnExpression) result = evaluate(returnExpression, scope);
-        break;
-      }
-      evaluate(statement, scope);
-    }
+    const result = evaluateCodeBlock(functionValue.body, scope);
 
     return result;
   }
 
   throw 'Cannot call identifier that is not a function\n' + JSON.stringify(func, null, 2);
+}
+
+export function evaluateBooleanExpression(
+  booleanExpression: BooleanExpression,
+  env: Environment
+): RuntimeValue {
+  const left = evaluate(booleanExpression.left, env);
+  const leftValue = GetRuntimeValue(left);
+
+  let right: RuntimeValue | undefined;
+  let rightValue;
+  if (booleanExpression.right) {
+    right = evaluate(booleanExpression.right, env);
+    rightValue = GetRuntimeValue(right);
+  }
+
+  if (right && rightValue && leftValue !== null) {
+    switch (booleanExpression.operator) {
+      case '==':
+        return MakeBoolean(leftValue == rightValue);
+      case '===':
+        return MakeBoolean(leftValue === rightValue && left.type === right.type);
+      case '!=':
+        return MakeBoolean(leftValue != rightValue);
+      case '!==':
+        return MakeBoolean(leftValue !== rightValue && left.type !== right.type);
+      case '>':
+        return MakeBoolean(leftValue > rightValue);
+      case '>=':
+        return MakeBoolean(leftValue >= rightValue);
+      case '<':
+        return MakeBoolean(leftValue > rightValue);
+      case '<=':
+        return MakeBoolean(leftValue >= rightValue);
+      case '&&':
+        return MakeBoolean(leftValue && rightValue ? true : false);
+      case '||':
+        return MakeBoolean(leftValue || rightValue ? true : false);
+      case undefined:
+        return MakeBoolean(leftValue ? true : false);
+      default:
+        throw `Cannot evaluate operator ${booleanExpression.operator} on boolean expression`;
+    }
+  } else {
+    return MakeBoolean(leftValue ? true : false);
+  }
 }

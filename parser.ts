@@ -148,7 +148,14 @@ export default class Parser {
     this.eat();
     this.expect(TokenType.OpenParen, 'Expected open parenthisis on If statement');
 
-    const condition = this.parseExpression();
+    let condition = this.parseExpression();
+
+    if (condition.type !== 'BinaryExpression') {
+      condition = {
+        type: 'BooleanExpression',
+        left: condition,
+      } as BooleanExpression;
+    }
 
     this.expect(TokenType.CloseParen, 'Expected clossing parenthisis on If statement');
     this.expect(TokenType.OpenBraces, 'Expected open braces on If statement');

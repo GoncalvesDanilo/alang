@@ -7,7 +7,7 @@ import {
   RuntimeValue,
 } from '../values';
 
-const GetRuntimeValue = (runtimeValue: RuntimeValue) => {
+export const GetRuntimeValue = (runtimeValue: RuntimeValue) => {
   switch (runtimeValue.type) {
     case 'boolean':
       return (runtimeValue as BooleanValue).value;
@@ -19,7 +19,7 @@ const GetRuntimeValue = (runtimeValue: RuntimeValue) => {
       objProperties.forEach((prop, key) => (contentObject[key] = GetRuntimeValue(prop)));
       return contentObject;
     case 'null':
-      return 'null';
+      return null;
     case 'native-function':
       return (runtimeValue as NativeFunctionValue).call;
     case 'function':
@@ -34,13 +34,13 @@ const ConvertToString = (runtimeValue: RuntimeValue): string => {
     case 'boolean':
       return String(GetRuntimeValue(runtimeValue));
     case 'number':
-      return GetRuntimeValue(runtimeValue).toString();
+      return String(GetRuntimeValue(runtimeValue));
     case 'null':
       return 'null';
     case 'object':
       return JSON.stringify(GetRuntimeValue(runtimeValue), null, 2);
     case 'native-function':
-      return GetRuntimeValue(runtimeValue).toString();
+      return String(GetRuntimeValue(runtimeValue));
     case 'function':
       return `function<${GetRuntimeValue(runtimeValue)}>`;
     default:

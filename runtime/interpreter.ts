@@ -1,9 +1,12 @@
 import {
   AssignmentExpression,
   BinaryExpression,
+  BooleanExpression,
   CallExpression,
   FunctionDeclaration,
   Identifier,
+  IfStatement,
+  MemberExpression,
   NumericLiteral,
   ObjectLiteral,
   Program,
@@ -16,11 +19,14 @@ import {
   evaluateAssignmentExpression,
   evaluateObject,
   evaluateCallExpression,
+  evaluateMemberExpression,
+  evaluateBooleanExpression,
 } from './eval/expressions';
 import { Environment } from './environment';
 import { RuntimeValue, NumberValue } from './values';
 import {
   evaluateFunctionDeclaration,
+  evaluateIfStatement,
   evaluateProgram,
   evaluateVariableDeclaration,
 } from './eval/statements';
@@ -37,10 +43,14 @@ export function evaluate(astNode: Statement, env: Environment): RuntimeValue {
       return evaluateIdentifier(astNode as Identifier, env);
     case 'ObjectLiteral':
       return evaluateObject(astNode as ObjectLiteral, env);
+    case 'MemberExpression':
+      return evaluateMemberExpression(astNode as MemberExpression, env);
     case 'CallExpression':
       return evaluateCallExpression(astNode as CallExpression, env);
     case 'AssignmentExpression':
       return evaluateAssignmentExpression(astNode as AssignmentExpression, env);
+    case 'BooleanExpression':
+      return evaluateBooleanExpression(astNode as BooleanExpression, env);
     case 'BinaryExpression':
       return evaluateBinaryExpression(astNode as BinaryExpression, env);
 
@@ -51,6 +61,8 @@ export function evaluate(astNode: Statement, env: Environment): RuntimeValue {
       return evaluateVariableDeclaration(astNode as VariableDeclaration, env);
     case 'FunctionDeclaration':
       return evaluateFunctionDeclaration(astNode as FunctionDeclaration, env);
+    case 'IfStatement':
+      return evaluateIfStatement(astNode as IfStatement, env);
 
     default:
       console.error(

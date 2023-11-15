@@ -5,6 +5,7 @@ export type ValueType =
   | 'boolean'
   | 'null'
   | 'number'
+  | 'string'
   | 'object'
   | 'native-function'
   | 'function';
@@ -22,6 +23,15 @@ export function MakeNull(): NullValue {
   return { type: 'null', value: null };
 }
 
+export interface BooleanValue extends RuntimeValue {
+  type: 'boolean';
+  value: boolean;
+}
+
+export function MakeBoolean(bool: boolean = true): BooleanValue {
+  return { type: 'boolean', value: bool };
+}
+
 export interface NumberValue extends RuntimeValue {
   type: 'number';
   value: number;
@@ -31,18 +41,19 @@ export function MakeNumber(number: number = 0): NumberValue {
   return { type: 'number', value: number };
 }
 
+export interface StringValue extends RuntimeValue {
+  type: 'string';
+  value: string;
+}
+
+export function MakeString(str: string = ''): StringValue {
+  return { type: 'string', value: str };
+}
+
+
 export interface ObjectValue extends RuntimeValue {
   type: 'object';
   properties: Map<string, RuntimeValue>;
-}
-
-export interface BooleanValue extends RuntimeValue {
-  type: 'boolean';
-  value: boolean;
-}
-
-export function MakeBoolean(bool: boolean = true): BooleanValue {
-  return { type: 'boolean', value: bool };
 }
 
 export interface Variable {
