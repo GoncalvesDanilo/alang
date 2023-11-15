@@ -184,9 +184,9 @@ export function evaluateBooleanExpression(
       case '>=':
         return MakeBoolean(leftValue >= rightValue);
       case '<':
-        return MakeBoolean(leftValue > rightValue);
+        return MakeBoolean(leftValue < rightValue);
       case '<=':
-        return MakeBoolean(leftValue >= rightValue);
+        return MakeBoolean(leftValue <= rightValue);
       case '&&':
         return MakeBoolean(leftValue && rightValue ? true : false);
       case '||':
