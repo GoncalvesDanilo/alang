@@ -15,6 +15,7 @@ import {
   ReturnStatement,
   IfStatement,
   BooleanExpression,
+  WhileStatement,
 } from './ast';
 import { Token, TokenType, tokenize } from './lexer';
 
@@ -53,12 +54,15 @@ export default class Parser {
 
     while (this.notEOF()) {
       program.body.push(this.parseStatement());
+      // console.dir(program.body, {depth:null})
     }
 
     return program;
   }
 
   private parseStatement(): Statement {
+    // console.log(this.at());
+
     switch (this.at().type) {
       case TokenType.Var:
       case TokenType.Const:
@@ -69,6 +73,8 @@ export default class Parser {
         return this.parseReturnStatement();
       case TokenType.If:
         return this.parseIfStatement();
+      case TokenType.While:
+        return this.parseWhileStatement();
       default:
         return this.parseExpression();
     }
@@ -192,6 +198,38 @@ export default class Parser {
     }
 
     return ifStatement;
+  }
+
+  private parseWhileStatement(): Statement {
+    this.eat();
+    this.expect(TokenType.OpenParen, 'Expected open parenthisis on While statement');
+
+    let condition = this.parseExpression();
+
+    if (condition.type !== 'BinaryExpression') {
+      condition = {
+        type: 'BooleanExpression',
+        left: condition,
+      } as BooleanExpression;
+    }
+
+    this.expect(TokenType.CloseParen, 'Expected clossing parenthisis on While statement');
+    this.expect(TokenType.OpenBraces, 'Expected open braces on While statement');
+
+    let body: Statement[] = [];
+    while (this.at().type !== TokenType.CloseBraces && this.notEOF()) {
+      body.push(this.parseStatement());
+    }
+
+    this.expect(TokenType.CloseBraces, 'Expected Closing Brace on While statement');
+
+    const whileStatement = {
+      type: 'WhileStatement',
+      condition,
+      body,
+    } as WhileStatement;
+
+    return whileStatement;
   }
 
   private parseExpression(): Expression {

@@ -47,6 +47,7 @@ const KEYWORDS: Record<string, TokenType> = {
   retornar: TokenType.Return,
   se: TokenType.If,
   senao: TokenType.Else,
+  enquanto: TokenType.While,
 };
 
 const isAlpha = (char: string): boolean => {

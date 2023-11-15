@@ -5,6 +5,7 @@ export type NodeType =
   | 'FunctionDeclaration'
   | 'ReturnStatement'
   | 'IfStatement'
+  | 'WhileStatement'
   // Expressions
   | 'BinaryExpression'
   | 'BooleanExpression'
@@ -55,6 +56,12 @@ export interface IfStatement extends Statement {
   condition: Expression;
   body: Statement[];
   elseBody?: Statement[];
+}
+
+export interface WhileStatement extends Statement {
+  type: 'WhileStatement';
+  condition: Expression;
+  body: Statement[];
 }
 
 // Expressions
