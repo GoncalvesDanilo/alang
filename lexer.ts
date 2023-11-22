@@ -11,6 +11,8 @@ export enum TokenType {
   Else,
   While,
   Return,
+  Continue,
+  Break,
 
   // operatiors
   BinaryOperator,
@@ -48,6 +50,8 @@ const KEYWORDS: Record<string, TokenType> = {
   se: TokenType.If,
   senao: TokenType.Else,
   enquanto: TokenType.While,
+  continuar: TokenType.Continue,
+  parar: TokenType.Break,
 };
 
 const isAlpha = (char: string): boolean => {

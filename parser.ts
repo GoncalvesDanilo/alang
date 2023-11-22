@@ -16,6 +16,8 @@ import {
   IfStatement,
   BooleanExpression,
   WhileStatement,
+  ContinueStatement,
+  BreakStatement,
 } from './ast';
 import { Token, TokenType, tokenize } from './lexer';
 
@@ -61,8 +63,6 @@ export default class Parser {
   }
 
   private parseStatement(): Statement {
-    // console.log(this.at());
-
     switch (this.at().type) {
       case TokenType.Var:
       case TokenType.Const:
@@ -75,6 +75,9 @@ export default class Parser {
         return this.parseIfStatement();
       case TokenType.While:
         return this.parseWhileStatement();
+      case TokenType.Continue:
+      case TokenType.Break:
+        return this.parseLoopStatements();
       default:
         return this.parseExpression();
     }
@@ -230,6 +233,19 @@ export default class Parser {
     } as WhileStatement;
 
     return whileStatement;
+  }
+
+  private parseLoopStatements(): Statement {
+    const statement = this.eat();
+
+    switch (statement.type) {
+      case TokenType.Continue:
+        return { type: 'ContinueStatement' } as ContinueStatement;
+      case TokenType.Break:
+        return { type: 'BreakStatement' } as BreakStatement;
+      default:
+        throw `Unexpected loop statement ${statement.value}`;
+    }
   }
 
   private parseExpression(): Expression {

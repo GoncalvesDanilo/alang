@@ -4,6 +4,8 @@ export type NodeType =
   | 'VariableDeclaration'
   | 'FunctionDeclaration'
   | 'ReturnStatement'
+  | 'ContinueStatement'
+  | 'BreakStatement'
   | 'IfStatement'
   | 'WhileStatement'
   // Expressions
@@ -49,6 +51,14 @@ export interface FunctionDeclaration extends Statement {
 export interface ReturnStatement extends Statement {
   type: 'ReturnStatement';
   value?: Expression;
+}
+
+export interface ContinueStatement extends Statement {
+  type: 'ContinueStatement';
+}
+
+export interface BreakStatement extends Statement {
+  type: 'BreakStatement';
 }
 
 export interface IfStatement extends Statement {
