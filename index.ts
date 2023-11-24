@@ -31,4 +31,4 @@ const repl = () => {
 };
 
 // repl();
-run('./test.a');
+run('./calculadora.a');
