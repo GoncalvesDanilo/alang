@@ -5,6 +5,7 @@ import {
   ReturnStatement,
   Statement,
   VariableDeclaration,
+  WhileStatement,
 } from '../../ast';
 import { Environment } from '../environment';
 import { evaluate } from '../interpreter';
@@ -49,6 +50,21 @@ export function evaluateIfStatement(
     result = evaluateCodeBlock(ifStatement.body, env);
   } else if (ifStatement.elseBody) {
     result = evaluateCodeBlock(ifStatement.elseBody, env);
+  }
+
+  return result;
+}
+
+export function evaluateWhileStatement(
+  whileStatement: WhileStatement,
+  env: Environment
+): RuntimeValue {
+  let conditionResult = evaluate(whileStatement.condition, env) as BooleanValue;
+
+  let result: RuntimeValue = MakeNull();
+  while (conditionResult.value) {
+    result = evaluateCodeBlock(whileStatement.body, env);
+    conditionResult = evaluate(whileStatement.condition, env) as BooleanValue;
   }
 
   return result;

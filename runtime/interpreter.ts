@@ -13,6 +13,7 @@ import {
   Statement,
   StringLiteral,
   VariableDeclaration,
+  WhileStatement,
 } from '../ast';
 import {
   evaluateIdentifier,
@@ -30,6 +31,7 @@ import {
   evaluateIfStatement,
   evaluateProgram,
   evaluateVariableDeclaration,
+  evaluateWhileStatement,
 } from './eval/statements';
 
 export function evaluate(astNode: Statement, env: Environment): RuntimeValue {
@@ -69,6 +71,8 @@ export function evaluate(astNode: Statement, env: Environment): RuntimeValue {
       return evaluateFunctionDeclaration(astNode as FunctionDeclaration, env);
     case 'IfStatement':
       return evaluateIfStatement(astNode as IfStatement, env);
+    case 'WhileStatement':
+      return evaluateWhileStatement(astNode as WhileStatement, env);
 
     default:
       console.error(
