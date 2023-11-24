@@ -5,6 +5,7 @@ import {
   NumberValue,
   ObjectValue,
   RuntimeValue,
+  StringValue,
 } from '../values';
 
 export const GetRuntimeValue = (runtimeValue: RuntimeValue) => {
@@ -13,6 +14,8 @@ export const GetRuntimeValue = (runtimeValue: RuntimeValue) => {
       return (runtimeValue as BooleanValue).value;
     case 'number':
       return (runtimeValue as NumberValue).value;
+    case 'string':
+      return (runtimeValue as StringValue).value;
     case 'object':
       const objProperties = (runtimeValue as ObjectValue).properties;
       let contentObject: Record<string, any> = {};
@@ -34,6 +37,8 @@ const ConvertToString = (runtimeValue: RuntimeValue): string => {
     case 'boolean':
       return String(GetRuntimeValue(runtimeValue));
     case 'number':
+      return String(GetRuntimeValue(runtimeValue));
+    case 'string':
       return String(GetRuntimeValue(runtimeValue));
     case 'null':
       return 'null';

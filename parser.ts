@@ -18,6 +18,7 @@ import {
   WhileStatement,
   ContinueStatement,
   BreakStatement,
+  StringLiteral,
 } from './ast';
 import { Token, TokenType, tokenize } from './lexer';
 
@@ -479,6 +480,12 @@ export default class Parser {
           type: 'NumericLiteral',
           value: parseFloat(this.eat().value),
         } as NumericLiteral;
+
+      case TokenType.String:
+        return {
+          type: 'StringLiteral',
+          value: this.eat().value,
+        } as StringLiteral;
 
       // grouping expressions
       case TokenType.OpenParen: {

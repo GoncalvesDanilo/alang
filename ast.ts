@@ -123,6 +123,11 @@ export interface NumericLiteral extends Expression {
   value: number;
 }
 
+export interface StringLiteral extends Expression {
+  type: 'StringLiteral';
+  value: string;
+}
+
 export interface Property extends Expression {
   type: 'Property';
   key: string;

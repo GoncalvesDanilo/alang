@@ -45,6 +45,19 @@ function evaluateNumericBinaryExpression(
   return { type: 'number', value: result };
 }
 
+function evaluateStringBinaryExpression(
+  leftHandSide: StringValue,
+  rightHandSide: StringValue,
+  operation: string
+): StringValue {
+  let result: string = '';
+  if (operation === '+') {
+    result = leftHandSide.value + rightHandSide.value;
+  }
+
+  return { type: 'string', value: result };
+}
+
 export function evaluateBinaryExpression(
   binaryExpression: BinaryExpression,
   env: Environment
@@ -56,6 +69,12 @@ export function evaluateBinaryExpression(
     return evaluateNumericBinaryExpression(
       leftHandSide as NumberValue,
       rightHandSide as NumberValue,
+      binaryExpression.operator
+    );
+  } else if (leftHandSide.type === 'string' || rightHandSide.type === 'string') {
+    return evaluateStringBinaryExpression(
+      leftHandSide as StringValue,
+      rightHandSide as StringValue,
       binaryExpression.operator
     );
   }

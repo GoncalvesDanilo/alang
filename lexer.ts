@@ -1,6 +1,7 @@
 export enum TokenType {
   // literal types
   Number,
+  String,
   Identifier,
 
   // keywords
@@ -193,6 +194,16 @@ export const tokenize = (sourceCode: string): Token[] => {
           // Unreconized name must mean user defined symbol.
           tokens.push(token(TokenType.Identifier, identifier));
         }
+      } else if (src[0] === "'" || src[0] === '"') {
+        // Handle String Literals
+        let quote: string = src.shift() as string;
+        let string = '';
+        while (src.length > 0 && src[0] !== quote) {
+          string += src.shift();
+        }
+        src.shift();
+
+        tokens.push(token(TokenType.String, string));
       } else if (isSkippable(src[0])) {
         // Skip uneeded chars.
         src.shift();

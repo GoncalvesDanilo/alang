@@ -11,6 +11,7 @@ import {
   ObjectLiteral,
   Program,
   Statement,
+  StringLiteral,
   VariableDeclaration,
 } from '../ast';
 import {
@@ -23,7 +24,7 @@ import {
   evaluateBooleanExpression,
 } from './eval/expressions';
 import { Environment } from './environment';
-import { RuntimeValue, NumberValue } from './values';
+import { RuntimeValue, NumberValue, StringValue } from './values';
 import {
   evaluateFunctionDeclaration,
   evaluateIfStatement,
@@ -39,6 +40,11 @@ export function evaluate(astNode: Statement, env: Environment): RuntimeValue {
         value: (astNode as NumericLiteral).value,
         type: 'number',
       } as NumberValue;
+    case 'StringLiteral':
+      return {
+        value: (astNode as StringLiteral).value,
+        type: 'string',
+      } as StringValue;
     case 'Identifier':
       return evaluateIdentifier(astNode as Identifier, env);
     case 'ObjectLiteral':
