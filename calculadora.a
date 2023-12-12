@@ -20,6 +20,8 @@ funcao realizarOperacao(valor1, valor2, operador) {
 var operador = ' '
 var valor1
 var valor2
+var valor1Convertido
+var valor2Convertido
 
 enquanto(operador) {
   operador = ler('Digite a operação (+,-,*,/,%):')
@@ -29,10 +31,14 @@ enquanto(operador) {
   imprimir()
 
   se (valor1 && valor2) {
-    const valor1Convertido = converterParaNumero(valor1)
-    const valor2Convertido = converterParaNumero(valor2)
+    valor1Convertido = converterParaNumero(valor1)
+    valor2Convertido = converterParaNumero(valor2)
 
-    imprimir('Resultado:', realizarOperacao(valor1Convertido, valor2Convertido, operador))
+    imprimir('Resultado:', realizarOperacao(
+      valor1Convertido,
+      valor2Convertido,
+      operador
+    ))
     imprimir()
   } senao {
     imprimir('Valores Inválidos')
